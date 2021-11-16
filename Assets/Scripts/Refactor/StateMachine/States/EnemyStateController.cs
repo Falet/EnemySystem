@@ -4,20 +4,37 @@ using UnityEngine;
 
 public class EnemyStateController : MonoBehaviour
 {
-    [SerializeField] private CharacterDetection characterDetection;
     [SerializeField] private List<AlarmAttack> alarmAttackEvents;
     [SerializeField] private AttackState attackState;
     [SerializeField] private AlarmState alarmState;
     [SerializeField] private DeadState deadState;
     [SerializeField] private State defaultState;
     
-    private State currentState;
+    private State _currentState;
     private Action _stateCompleted;
+
+    public void Init()
+    {
+        enabled = false;
+        _currentState = defaultState;
+        _currentState.OnCompletedState(_stateCompleted);
+        _currentState.OnSet();
+        _currentState = defaultState;
+    }
+
+    public void Activate()
+    {
+        enabled = true;
+    }
+
+    public void Deactivate()
+    {
+        enabled = false;
+    }
     
     private void Awake()
     {
         _stateCompleted = OnStateCompleted;
-        characterDetection.CharacterDetected += CharacterDetected;
     }
 
     private void AlarmAttackEventsOnAlarmed()
@@ -27,26 +44,18 @@ public class EnemyStateController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (alarmAttackEvents != null)
+        /*if (alarmAttackEvents != null)
         {
             for (var i = 0; i < alarmAttackEvents.Count; i++)
             {
                 alarmAttackEvents[i].Alarmed += AlarmAttackEventsOnAlarmed;
             }
-        }
+        }*/
     }
 
-    private void Start()
+    public void CharacterDetected()
     {
-        currentState = defaultState;
-        currentState.OnCompletedState(_stateCompleted);
-        currentState.OnSet();
-        currentState = defaultState;
-    }
-
-    private void CharacterDetected()
-    {
-        if (!(currentState is AttackState))
+        if (_currentState is AttackState == false && _currentState is DeadState == false)
         {
             SetState(attackState);
         }
@@ -54,11 +63,12 @@ public class EnemyStateController : MonoBehaviour
     
     private void SetState(State state)
     {
-        currentState.OnCompletedState(null);
-        currentState.OnUnset();
-        currentState = state;
-        currentState.OnCompletedState(_stateCompleted);
-        currentState.OnSet();
+        if(enabled == false && state != defaultState) return;
+        _currentState.OnCompletedState(null);
+        _currentState.OnUnset();
+        _currentState = state;
+        _currentState.OnCompletedState(_stateCompleted);
+        _currentState.OnSet();
     }
 
     private void OnStateCompleted()
@@ -68,19 +78,18 @@ public class EnemyStateController : MonoBehaviour
 
     private void OnDisable()
     {
-        characterDetection.CharacterDetected -= CharacterDetected;
-        for (var i = 0; i < alarmAttackEvents.Count; i++)
+        /*for (var i = 0; i < alarmAttackEvents.Count; i++)
         {
             alarmAttackEvents[i].Alarmed -= AlarmAttackEventsOnAlarmed;
-        }
+        }*/
     }
 
     public void Die()
     {
-        currentState.OnCompletedState(null);
-        currentState.OnUnset();
+        _currentState.OnCompletedState(null);
+        _currentState.OnUnset();
         deadState.OnSet();
-        currentState = deadState;
+        _currentState = deadState;
         enabled = false;
     }
 }

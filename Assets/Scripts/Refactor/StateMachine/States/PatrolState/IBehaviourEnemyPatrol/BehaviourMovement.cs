@@ -10,7 +10,7 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
     [SerializeField] private float speedMovement = 3.5f;
     [SerializeField] private List<Transform> targetPoints;
     [SerializeField] private float duration = 1f;
-    //[SerializeField] private EnemyAnimationController animationController;
+    [SerializeField] private AnimationControllerEnemy animationController;
 
     private int _countPointsForMove;
     private List<NavMeshPath> _calculatedPath;
@@ -19,11 +19,19 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
     private Action _onPartComplete;
     private Action _onAllComplete;
     private Action _completeMove;
-    
+
     private void Awake()
     {
-        _completeMove = OnCompleteMovementToPoint;
         _waiterForCoroutine = new WaitForSeconds(duration);
+    }
+
+    public void Init(List<Transform> targetPointsParam, Vector3 targetPosition)
+    {
+        //movementWithNavmesh.Move(targetPosition);
+
+        targetPoints = targetPointsParam;
+        
+        _completeMove = OnCompleteMovementToPoint;
         for (var j = targetPoints.Count-2; j > 0 ; j--)
         {
             targetPoints.Add(targetPoints[j]);
@@ -36,7 +44,7 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
             movementWithNavmesh.CalculatePath(targetPoints[g].position,_calculatedPath[g]);
         }
     }
-
+    
     public void StartBehaviour(bool startOver)
     {
         movementWithNavmesh.CompleteMovementToPoint += _completeMove;
@@ -57,7 +65,7 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
             StopCoroutine(_hold);
         }
         movementWithNavmesh.Kill();
-        //animationController.StopAnimationWalking();
+        animationController.Move(false);
         
         if (_countPointsForMove >= targetPoints.Count)
         {
@@ -90,7 +98,7 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
     
     private void OnCompleteMovementToPoint()
     {
-        //animationController.StopAnimationWalking();
+        animationController.Move(false);
         _hold = StartCoroutine(Hold());
     }
 
@@ -104,7 +112,7 @@ public class BehaviourMovement : MonoBehaviour,IBehaviourEnemyPatrol
 
     private void Move()
     {
-        //animationController.PlayAnimationWalking();
+        animationController.Move(true);
         if (movementWithNavmesh.SetPath(_calculatedPath[_countPointsForMove],speedMovement) == false)
         {
             movementWithNavmesh.SetDestination(targetPoints[_countPointsForMove].position,speedMovement);

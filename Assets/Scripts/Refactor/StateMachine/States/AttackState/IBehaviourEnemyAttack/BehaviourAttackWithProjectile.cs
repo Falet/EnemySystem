@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BehaviourAttackWithProjectile : MonoBehaviour, IBehaviourEnemyAttack
 {
-    [SerializeField] private AttackWithProjectile attackWithProjectile;
+    [SerializeField] private AttackByNet attackByNet;
     [SerializeField] private float delayBeforeFire = 0.5f;
     [SerializeField] private float delayAfterFire = 0.5f;
     [SerializeField] private EnemyAnimationController animationController;
@@ -23,7 +23,7 @@ public class BehaviourAttackWithProjectile : MonoBehaviour, IBehaviourEnemyAttac
     //TODO Переделать подписку на эвент, убрать аллок и сделать на колбэках
     private void OnEnable()
     {
-        attackWithProjectile.CompleteAttack += CompleteAttack;
+        attackByNet.CompleteAttack += CompleteAttack;
     }
 
     public void StartBehaviour()
@@ -37,7 +37,7 @@ public class BehaviourAttackWithProjectile : MonoBehaviour, IBehaviourEnemyAttac
         {
             StopCoroutine(_delayBeforeFire);
         }
-        attackWithProjectile.Kill();
+        attackByNet.Kill();
         
         animationController.PlayAnimationWaitWatch();
     }
@@ -59,7 +59,7 @@ public class BehaviourAttackWithProjectile : MonoBehaviour, IBehaviourEnemyAttac
         if (characterDetection.CharacterIsDetect)
         {
             animationController.PlayAnimationBang();
-            attackWithProjectile.Attack();
+            attackByNet.Attack();
         }
         else
         {
@@ -76,6 +76,6 @@ public class BehaviourAttackWithProjectile : MonoBehaviour, IBehaviourEnemyAttac
 
     private void OnDisable()
     {
-        attackWithProjectile.CompleteAttack -= CompleteAttack;
+        attackByNet.CompleteAttack -= CompleteAttack;
     }
 }

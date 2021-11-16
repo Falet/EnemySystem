@@ -22,9 +22,13 @@ public class QueueStatePatrol : MonoBehaviour
     [SerializeField] private PatrolState state;
 
     private List<DataCompleteBehaviourPatrol> queueComplete;
-    
-    private void Awake()
+
+    public void Init(List<Transform> targetPoints, List<WithoutOdin> queueCompleteForSerializeParam, Vector3 targetPosition)
     {
+        movement.Init(targetPoints, targetPosition);
+
+        queueCompleteForSerialize = queueCompleteForSerializeParam;
+        
         queueComplete = new List<DataCompleteBehaviourPatrol>();
         for (int i = 0; i < queueCompleteForSerialize.Count; i++)
         {

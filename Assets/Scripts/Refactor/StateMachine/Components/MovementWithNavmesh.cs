@@ -51,6 +51,11 @@ public class MovementWithNavmesh : MonoBehaviour
         return true;
     }
 
+    public void Move(Vector3 position)
+    {
+        navMeshAgent.Move(position);
+    }
+
     public void Kill()
     {
         if (_onCompleteMovement != null)

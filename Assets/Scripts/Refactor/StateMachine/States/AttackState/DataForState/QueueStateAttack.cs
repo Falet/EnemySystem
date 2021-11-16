@@ -8,6 +8,7 @@ public class QueueStateAttack : MonoBehaviour
     [SerializeField] private BehaviourAlarmAttack behaviourAlarmAttack;
     [SerializeField] private BehaviourMovementAtAlarm behaviourMovementAtAlarm;
     [SerializeField] private BehaviourAttack behaviourAttack;
+    [SerializeField] private BehaviourAttackWithProjectileNinja behaviourAttackWithProjectileNinja;
     [SerializeField] private AttackState state;
     
     private void Awake()
@@ -33,6 +34,11 @@ public class QueueStateAttack : MonoBehaviour
         if (behaviourAlarmAttack != null)
         {
             queueComplete.Add(new DataCompleteBehaviourAttack(behaviourAlarmAttack, true));
+        }
+        
+        if (behaviourAttackWithProjectileNinja != null)
+        {
+            queueComplete.Add(new DataCompleteBehaviourAttack(behaviourAttackWithProjectileNinja, true));
         }
         
         state.SetQueueComplete(queueComplete);
